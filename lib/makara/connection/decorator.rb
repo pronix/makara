@@ -1,5 +1,5 @@
 module Makara
-  
+
   module Connection
     # module which gets extended on adapter instances
     # overrides execute so it will delegate to the makara adapter once
@@ -34,7 +34,11 @@ module Makara
       def execute(*args)
         with_makara do |adapter|
           if adapter.nil?
-            return (defined?(super) ? super : nil)
+            if try(:super)
+              return super
+            else
+              return nil
+            end
           else
             adapter.execute(*args)
           end
