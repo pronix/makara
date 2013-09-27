@@ -84,6 +84,9 @@ module Makara
       @currently_stuck_ids ||= []
     end
 
+    def namespace
+      primary_config[:namespace]
+    end
 
     def primary_config
       @primary_config ||= begin

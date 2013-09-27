@@ -12,7 +12,7 @@ describe Makara::Middleware do
   end
 
   let(:request){ env_for('/get/request') }
-  
+
   let(:responder_app){            lambda{|env| [200, {}, ['Requestor']] }   }
   let(:redirector_app){           lambda{|env| [302, {}, ['Redirector']] }  }
 
@@ -45,7 +45,7 @@ describe Makara::Middleware do
     status, headers, body = middleware('responder').call(request)
     set_cookie_value(headers).should eql('default')
   end
-  
+
   it "should delete the cookie when a request is made after a sticky request and master is not stuck again" do
     @env = {'HTTP_COOKIE' => 'makara-master-ids=default'}
     status, headers, body = middleware('responder').call(request)
@@ -72,11 +72,11 @@ describe Makara::Middleware do
 
     adapter.mcon.makara_adapter = adapter
 
-    app = lambda do |env| 
+    app = lambda do |env|
       adapter.execute('update users set value = 1')
       [200, {}, 'Updater']
     end
-    
+
     middle = Makara::Middleware.new(app)
 
     status, headers, body = middle.call(request)
@@ -93,18 +93,18 @@ describe Makara::Middleware do
     it 'should use the app namespace as the cache key' do
       Makara.namespace.should eql('my_app')
 
-      app = lambda do |env| 
+      app = lambda do |env|
         adapter.execute('update users set value = 1')
         [200, {}, 'Updater']
       end
-      
+
       middle = Makara::Middleware.new(app)
 
       status, headers, body = middle.call(request)
 
       headers['Set-Cookie'].should =~ /makara-my_app-master-ids/
       headers['Set-Cookie'].should_not =~ /makara-master-ids/
-      
+
       set_cookie_value(headers).should eql('default')
     end
   end
